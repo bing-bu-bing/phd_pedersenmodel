@@ -1,0 +1,409 @@
+\documentclass[letterpaper,
+               %boxit,        % check whether paper is inside correct margins
+               %titlepage,    % separate title page
+               %refpage       % separate references
+               %biblatex,     % biblatex is used
+               nospread,     % flushend option: do not fill with whitespace to balance columns
+               %hyphens,      % allow \url to hyphenate at "-" (hyphens)
+               %xetex,        % use XeLaTeX to process the file
+               %luatex,       % use LuaLaTeX to process the file
+               ]{jacow}
+%
+% ONLY FOR \footnote in table/tabular
+%
+%===\usepackage{pdfpages,multirow,ragged2e} %
+%
+% CHANGE SEQUENCE OF GRAPHICS EXTENSION TO BE EMBEDDED
+% ----------------------------------------------------
+% test for XeTeX where the sequence is by default eps-> pdf, jpg, png, pdf, ...
+%    and the JACoW template provides JACpic2v3.eps and JACpic2v3.jpg which
+%    might generates errors, therefore PNG and JPG first
+%
+\makeatletter%
+	\ifboolexpr{bool{xetex}}
+	 {\renewcommand{\Gin@extensions}{.pdf,%
+	                    .png,.jpg,.bmp,.pict,.tif,.psd,.mac,.sga,.tga,.gif,%
+	                    .eps,.ps,%
+	                    }}{}
+\makeatother
+
+% CHECK FOR XeTeX/LuaTeX BEFORE DEFINING AN INPUT ENCODING
+% --------------------------------------------------------
+%   utf8  is default for XeTeX/LuaTeX
+%   utf8  in LaTeX only realises a small portion of codes
+%
+\ifboolexpr{bool{xetex} or bool{luatex}} % test for XeTeX/LuaTeX
+ {}                                      % input encoding is utf8 by default
+ {\usepackage[utf8]{inputenc}}           % switch to utf8
+
+\usepackage[USenglish]{babel}
+
+\ifboolexpr{bool{jacowbiblatex}}%
+ {
+  \addbibresource{jacow-test.bib}
+  \addbibresource{biblatex-examples.bib}
+ }{}
+\listfiles
+
+
+\begin{document}
+\title{Stability analysis of double-harmonic cavity system in heavy beam
+   loading with its feedback loops by a mathematical method based on Pedersen model}
+\author{Y. B. Shen\textsuperscript{1,2}\thanks{shenyubing@sianp.ac.cn}
+   , Q. Gu\textsuperscript{3}, Z. G. Jiang\textsuperscript{3}, D. Gu\textsuperscript{3}, Z. H. Zhu\textsuperscript{1,2}\\
+   \textsuperscript{1}Shanghai Institute of Applied Physics, Chinese Academy of Sciences, Shanghai 201800, China\\
+   \textsuperscript{2}University of Chinese Academy of Sciences, Beijing 100049, China\\
+   \textsuperscript{3}Shanghai Advanced Research Institute, Chinese Academy of Sciences, Shanghai 201210, China}
+\maketitle
+
+\begin{abstract}
+   With the high beam current in storage ring, it is necessary to consider
+   the instability problem caused by the heavy beam loading effect. It has
+   been demonstrated that direct RF feedback (DRFB), autolevel control
+   loop (ALC) and phase-lock loop (PLL) in the main cavity can lessen
+   the impact of the beam effect. This paper regarded the beam, main
+   cavity, harmonic cavity and feedback loops as double harmonic cavity
+   system, and extended the transfer functions in the Pedersen model to
+   this system. Some quantitative evaluations of simulation results have
+   been got and conclusions have been drawn. In the case of a passive
+   harmonic cavity, the optimization strategy of the controller parameters
+   in the pre-detuning , ALC and PLL, as well as the gain and phase shift
+   of DRFB were discussed. Meanwhile, it also involved the impact of the
+   harmonic cavity feedback loop on the system stability at the optimum
+   stretching condition when an active harmonic cavity was present.
+   The research results can be used as guidelines for beam operation
+   with beam current increasing in the future.
+\end{abstract}
+
+\section{Introduction}
+The higher harmonic cavity (HHC) has been proven to improve beam
+life and suppress instabilities through Landau damping without
+affecting energy diffusion and brightness\cite{ref1}\cite{ref2}.
+However, in the fundamental mode, passing through the HHC can
+destabilize the beam according to the Robinson criterion,
+requiring detuning of the main cavity to maintain stability\cite{ref3}.
+To study RF system instability, the influence of HHC cannot be ignored.
+Techniques such as direct RF feedback (DRFB) can reduce heavy
+beam loading and increase beam current limit by increasing cavity
+bandwidth and reducing RF cavity shunt impedance\cite{ref4}.
+Autolevel control loop (ALC), and phase lock loop (PLL) in
+low-level RF (LLRF) systems stabilize cavity voltage while
+affecting overall system stability. Robinson stability criterion
+calculates the maximum beam current for a single cavity in the
+storage ring\cite{ref5}, and Pedersen's feedback loop model
+explains Robinson instability using beam and generator current modulations\cite{ref6}.
+This paper adds HHC, DRFB, ALC, and PLL to Pedersen's model to
+analyze loop instability and analyze the influence of loading angle,
+HHC detuning, ALC and PLL controller parameters, and DRFB gain and
+phase shift on the maximum beam current limit. Taking the Shanghai
+Synchrotron Radiation Facility(SSRF) as an example, the effects
+of various parameters on instability were analyzed and suggestions were proposed.
+
+\section{Model description}
+Taking passive harmonic double cavity system as an example,
+the steady-state phasor diagram is shown in Fig.1.The
+voltage ${{\tilde{V}}_{C}}$in the main cavity is determined
+by beam current ${{\tilde{I}}_{B}}$, excitation source current
+$\tilde{I}_{G}^{{}}$, DRFB current $\tilde{I}_{F}^{{}}$ and
+cavity impedance. ${{\varphi }_{s}}$,${{\varphi }_{L}}$ and ${{\theta }_{L}}$
+are the synchronization angle, detuning angle, and pre-detuning angle, respectively.
+The total voltage ${{\tilde{V}}_{T}}$ is the vector sum of the
+main cavity voltage and the passive HHC voltage ${{\tilde{V}}_{H}}$.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=.5\columnwidth]{THPA037_f1}
+   \caption{Phasor diagram for the steady-state case,
+      depicting the amplitude and phase of each voltage
+      and current of the transmitter, cavity and beam.}
+   \label{fig:paper_layout}
+\end{figure}
+\\
+\hspace*{1em}$Y={{{I}_{B}}}/{{{I}_{0}}}\;$ is usually
+used to characterize the severity of the beam loading effect, where
+${{I}_{0}}$ is the projection of ${{I}_{T}}$ onto${{V}_{C}}$. Based
+on this, the parameter $X={{{I}_{F}}}/{{{I}_{0}}}\;$
+can be defined to characterize the gain of the feedback current,
+while the phase can be represented by ${{\varphi }_{F}}$.
+In the case of high-Q, the detuning angle ${{\varphi }_{H}}$
+can be figured out to be about 90°, and the passive HHC voltage can be calculated from
+${{V}_{H}}={{I}_{B}}\frac{{{r}_{p}}}{{{Q}_{p}}}\frac{{{f}_{hrf}}}{\Delta f}$
+\cite{ref7}, where ${{f}_{hrf}}$
+is n times of the RF frequency, ${\Delta f}$ is the detuning frequency.
+The total cavity voltage can be determined by
+${{V}_{T}}$ and ${{\theta }_{T}}$.
+\begin{equation}\label{eq:label}
+   \left\{ \begin{matrix}
+      {{V}_{T}}=\sqrt{V_{C}^{2}+V_{H}^{2}-2{{V}_{C}}{{V}_{H}}\cos ({{\varphi }_{s}}-{{\varphi }_{H}})}                                                                            \\
+      {{\theta }_{T}}=\arctan \left( -\frac{{{V}_{C}}\cos {{\varphi }_{s}}-{{V}_{H}}\cos {{\varphi }_{H}}}{{{V}_{C}}\sin {{\varphi }_{s}}-{{V}_{H}}\sin {{\varphi }_{H}}} \right) \\
+   \end{matrix} \right.
+\end{equation}
+\hspace*{1em}The detuning angle of the main cavity can be
+obtained by phasor diagram, which is equal to
+\begin{footnotesize}
+   \begin{equation}\label{eq:label}
+      \tan {{\varphi }_{L}}=X\sin {{\varphi }_{F}}-Y\sin {{\varphi }_{s}}+\left( 1+Y\cos {{\varphi }_{s}}-X\cos {{\varphi }_{F}} \right)\tan {{\theta }_{L}}
+   \end{equation}
+\end{footnotesize}
+\hspace*{1em}The Pedersen model of the passive harmonic double cavity
+system can be deduced from the expression of the vector relationship
+and the impedance of the cavity, as shown in Fig.2.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=1\columnwidth]{THPA037_f2}
+   \caption{Expanded Pedersen model with passive HHC, ALC, PLL, and DRFB added.}
+   \label{fig:paper_layout}
+\end{figure}
+
+Due to the slow response of tuner loop, only the ALC and PLL are
+considered in the simulation\cite{ref8}, Note that this work
+only includes static beam loading effects.
+The transfer function that relates the modulation of current
+excitation to the
+modulation of cavity voltage signal in HHC is as follows:
+\begin{equation}\label{eq:label}
+   \left\{ \begin{matrix}
+      G_{pa}^{BP}=\frac{\sigma _{p}^{{}}\tan {{\varphi }_{H}}s}{{{s}^{2}}+2\sigma _{p}^{{}}s+\sigma _{p}^{2}(1+{{\tan }^{2}}{{\varphi }_{H}})}                             \\
+      G_{pp}^{BP}=\frac{\sigma _{p}^{2}(1+{{\tan }^{2}}{{\varphi }_{H}})+\sigma _{p}^{{}}s}{{{s}^{2}}+2\sigma _{p}^{{}}s+\sigma _{p}^{2}(1+{{\tan }^{2}}{{\varphi }_{H}})} \\
+   \end{matrix} \right.
+\end{equation}
+\hspace*{1em}Where ${\sigma \text{=}{{{\omega }_{rf}}}/{\text{(}2{{Q}_{L}}\text{)}}}$ is the cavity damping factor,
+${{\sigma }_{p}}$ is the cavity damping factor of passive HHC. According to the vector relationship
+\begin{small}
+   \begin{equation}\label{eq:label}
+      \left\{ \begin{matrix}
+         G_{pa}^{F}=\frac{{{I}_{F}}}{{{I}_{T}}}\left[ {{G}_{aa}}\sin \left( {{\varphi }_{F}}-{{\varphi }_{L}} \right)+{{G}_{pa}}\cos \left( {{\varphi }_{F}}-{{\varphi }_{L}} \right) \right]  \\
+         G_{pp}^{F}=\frac{{{I}_{F}}}{{{I}_{T}}}\left[ {{G}_{ap}}\sin \left( {{\varphi }_{F}}-{{\varphi }_{L}} \right)+{{G}_{pp}}\cos \left( {{\varphi }_{F}}-{{\varphi }_{L}} \right) \right]  \\
+         G_{pa}^{B}=\frac{{{I}_{B}}}{{{I}_{T}}}\left[ -{{G}_{aa}}\sin \left( {{\varphi }_{s}}-{{\varphi }_{L}} \right)-{{G}_{pa}}\cos \left( {{\varphi }_{s}}-{{\varphi }_{L}} \right) \right] \\
+         G_{pp}^{B}=\frac{{{I}_{B}}}{{{I}_{T}}}\left[ -{{G}_{ap}}\sin \left( {{\varphi }_{s}}-{{\varphi }_{L}} \right)-{{G}_{pp}}\cos \left( {{\varphi }_{s}}-{{\varphi }_{L}} \right) \right] \\
+      \end{matrix} \right.
+   \end{equation}
+\end{small}
+\hspace*{1em}By the same token, we can get transfer functions such as ${G_{pa}^{G}}$,${G_{pp}^{G}}$,${G_{ap}^{F}}$,${G_{aa}^{F}}$.
+${{B}_{s}}={\Omega _{s}^{2}}/{\left( {{s}^{2}}+{{\alpha }_{s}}\cdot s+\Omega _{s}^{2} \right)}\;$ is
+the transfer function from the equivalent phase modulation of the total cavity voltage to the phase modulation of the beam current, where
+$\Omega _s^{}$  is the longitudinal oscillation frequency\cite{ref9}.
+Main cavity and harmonic cavity can both affect the equivalent phase of the total cavity voltage\cite{ref10}, and the weight of each component is
+\begin{small}
+   \begin{equation}\label{eq:label}
+      \left\{ \begin{matrix}
+         G_{ab}=[-\cos ({{\theta }_{T}}-{{\varphi }_{s}})-\sin ({{\theta }_{T}}-{{\varphi }_{s}})\tan {{\theta }_{T}}]\frac{{{V}_{C}}}{{{V}_{T}}}    \\
+         G_{pb}=[-\sin ({{\theta }_{T}}-{{\varphi }_{s}})+\cos ({{\theta }_{T}}-{{\varphi }_{s}})\tan {{\theta }_{T}}]\frac{{{V}_{C}}}{{{V}_{T}}}    \\
+         G_{ab}^{p}=[\cos ({{\theta }_{T}}-{{\varphi }_{H}})+\sin ({{\theta }_{T}}-{{\varphi }_{H}})\tan {{\theta }_{T}}]\frac{{{V}_{H}}}{{{V}_{T}}} \\
+         G_{pb}^{p}=[\sin ({{\theta }_{T}}-{{\varphi }_{H}})-\cos ({{\theta }_{T}}-{{\varphi }_{H}})\tan {{\theta }_{T}}]\frac{{{V}_{H}}}{{{V}_{T}}} \\
+      \end{matrix} \right.
+   \end{equation}
+\end{small}
+\hspace*{1em}In DRFB loop, the amplifier needs to convert the voltage modulation signal into current modulation signal
+${{G}_{f}}={X}/{{{R}_{L}}}$, where ${{R}_{L}}$ is the load shunt impedance in main cavity. The ALC and PLL controller is represented
+as low pass filter that does not include the carrier frequency portion and removes the DC component\cite{ref11}. Furthermore,
+Where ${{K}_{Ca}}$ and ${{K}_{Cp}}$ represent the gain, ${{C}_{a}}$ and ${{C}_{p}}$ represent the bandwidth.
+\begin{equation}\label{eq:label}
+   {{C}_{a,p}}=\frac{{{\omega }_{a,p}}}{s+{{\omega }_{a,p}}}
+\end{equation}
+
+\section{Influence of loop parameters on system performance}
+Robinson instability calculates the maximum beam current of the bunch in a single cavity
+, which occurs when ${{\tilde{V}}_{G}}$ and ${{\tilde{I}}_{B}}$ in the vector diagram are
+in opposite phases. However, when additional loops are added, the coupling between the loops
+makes it difficult to intuitively demonstrate instability analysis in the vector diagram.
+In this case, New model can calculate the open-loop transfer function and draw the Nyquist
+curve. When appropriate controller parameters are set, the poles of the system will not
+fall in right half-plane. According to the Nyquist stability criterion, when the number
+of crossings of the open-loop magnitude plot (positive frequency) with the left-hand
+side of the (-1, 0j) point on the real axis is zero, there are no poles in the right
+half-plane of the closed-loop system, then the system is stable.
+Due to the negligible effect of the klystron's control function on beam dynamics, the loop
+delay time T is approximately 1-2$\mu s$ \cite{ref13}. The zero-mode oscillation frequency
+of SSRF is approximately 4.8kHz, and the delay function is approximately
+${e^{ - sT}} \approx 1 - sT \approx 1$. Therefore, to simplify the model, delay is not considered.
+\begin{table}[!hbt]
+   \centering
+   \caption{High-frequency parameters of SSRF\cite{ref12}\cite{ref13}}
+   \begin{tabular}{lcc}
+      \toprule
+      %\textbf{Margin} & \textbf{A4 Paper}                      \\
+      \midrule
+      Energy                       & 3.5GeV     \\ %[3pt]
+      RF frequency                 & 499.654MHz \\ %[3pt]
+      Harmonic number              & 720        \\ %[3pt]
+      Radiation loss               & 1.44MeV    \\
+      Main RF voltage              & 4.5-5.4MV  \\
+      r/Q of third harmonic cavity & 88         \\
+      Harmonic cavity number       & 3          \\
+      \bottomrule
+   \end{tabular}
+   \label{tab:margins}
+\end{table}
+
+The shunt impedance of the main high-frequency cavity is 28.5MΩ , the designed voltage
+of the main cavity is 5.4 MV. The HHC voltage is approximately 1.8 MV under optimal
+stretching conditions, the detuning frequency can be calculated as 22kHz.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{THPA037_f3}
+   \caption{The beam current is 300mA. DRFB is adjusted to achieve the critical
+      stable state, where the curve passes through (-1, 0j), and this state is
+      extended to double cavity system with different detunings, where the system remains in the critical stable state.}
+   \label{fig:paper_layout}
+\end{figure}
+The stability can be determined by the gain margin, represented by SC for single
+cavity and DC for double cavity, as seen in Fig.3 Nyquist plot. Critical stability
+states are achieved by adjusting the gain and phase shift angle of DRFB as shown in Fig.4.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{THPA037_f4}
+   \caption{System gain margin versus phase shift angle, that is calculated with
+      single cavity and double cavity, X=0-1.}
+   \label{fig:paper_layout}
+\end{figure}
+
+Setting the phase shift angle in the range of -180° to -300° can make the system
+more stable. In addition, adding HHC in the stable state will lead to a decrease in stability margin.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{THPA037_f5}
+   \caption{System gain margin versus Pre-detuning angle, that is calculated with HHC detuning frequency 18-26 kHz.}
+   \label{fig:paper_layout}
+\end{figure}
+
+From Fig.5, it can be seen that the system is most unstable when the
+pre-detuning angle is between 0-30°. In practice, due to the poor loop
+control capability, there is often a deviation in the beam loading angle.
+To prevent it from falling into the most unstable region, the loading
+angle can be preset to a small negative value.
+
+After considering ALC and PLL loops, Assume that the initial controller gain is
+6 and bandwidth is 1 kHz. The effects of their gain and bandwidth on system stability are discussed separately\cite{ref14}.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.8\columnwidth]{THPA037_f6}
+   \caption{Nyquist plot with gradually increasing amplitude loop gain, system from stable to unstable.}
+   \label{fig:paper_layout}
+\end{figure}
+
+By analyzing the Nyquist plot as fig.6, it can be concluded that the stability of
+various curves can be compared by the phase margin. When the ALC gain increases,
+the phase margin decreases. However, simulation results have confirmed that variations
+in PLL gain and controller bandwidth within a certain range do not affect stability margin.
+
+After being converted to an active HHC, the optimal stretching state can be achieved
+at different beam intensities. Adjusting the HHC transmitter coupling coefficient
+can meet the optimal coupling, satisfying ${{\beta }_{op}}=1+{{{P}_{B}}}/{{{P}_{H}}}\;$\cite{ref15},
+and its ALC and PLL controllers are consistent with the main cavity. However, it is found that the system is prone to enter an unstable state as shown in Fig.7.
+\begin{figure}[!htb]
+   \centering
+   \includegraphics*[width=0.7\columnwidth]{THPA037_f7}
+   \caption{Nyquist plot of the system. operation1: Reduce controller gain to 2 and bandwidth to 500 Hz; operation2: DRFB
+      $X=1,{\varphi _F}=-260^\circ $; operation3: The coupling coefficient is reduced to one tenth of the optimal coupling.}
+   \label{fig:paper_layout}
+\end{figure}
+
+Three solutions are proposed:
+\begin{Itemize}
+   \item  Reducing the gain and bandwidth of each controller, even if it may result in slower feedback control;
+   \item  Using DRFB, but a high feedback gain may result in a decrease in the precision of cavity voltage control or even produce self-excited oscillation in the loop;
+   \item  Decreasing the coupling coefficient of the transmitter of the HHC.
+\end{Itemize}
+\section{Conclusion}
+This article proposes a novel mathematical method based on the Pedersen model
+to analyze the stability of harmonic double cavity system for the first time.
+The model utilizes control theory to provide a clear description of the effects
+of each variable parameter on the stability of the system. Taking SSRF as an
+example, it is discussed that the addition of a passive HHC does not affect
+the maximum stable current, but it reduces the stability margin of the system
+in the stable state. Optimization strategies for system stability are
+presented by adjusting the parameters of pre-tuning angle, DRFB, ALC, and PLL.
+Furthermore, the model is extended to an active HHC system, and it is found
+that this system is prone to unstable states. Three upgrade proposals for
+future active harmonic systems are proposed in this paper.
+
+% only for "biblatex"
+%
+\ifboolexpr{bool{jacowbiblatex}}%
+{\printbibliography}%
+{%
+   % "biblatex" is not used, go the "manual" way
+
+   \begin{thebibliography}{99}   % Use for  10-99  references
+      %\begin{thebibliography}{9} % Use for 1-9 references
+
+      \bibitem{ref1}
+      L. H. Chang, Ch. Wang, M. C. Lin, and M. S. Yeh, “Effects of the Passive Harmonic Cavity on the Beam Bunch”, in
+      \textit{Proceedings of the 2005 Particle Accelerator Conference,},
+      May 2005, pp. 3904-3906. doi: 10.1109/PAC.2005.1591663.
+
+      \bibitem{ref2}
+      R. A. Bosch and C. S. Hsue, “Suppression of longitudinal coupled-bunch instabilities by a passive higher harmonic cavity”, in
+      \textit{Proceedings of International Conference on Particle Accelerators,},
+      May 1993, pp. 3369-3371 vol.5. doi: 10.1109/PAC.1993.309653.
+
+      \bibitem{ref3}
+      K. Ng, “Passive landau cavity for the LNLS light source electron ring”, 2000.
+
+      \bibitem{ref4}
+      M. G. Minty and R. H. Siemann, “Heavy beam loading in storage ring radio frequency systems”,
+      \textit{Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment,},
+      vol. 376, no. 3, pp. 301-318, Jul. 1996, doi: 10.1016/0168-9002(96)00180-5.
+
+      \bibitem{ref5}
+      K. W. Robinson, “Stability of beam in radiofrequency system”, Cambridge Electron accelerator, Mass., CEAL-1010, Feb. 1964. doi: 10.2172/4075988.
+
+      \bibitem{ref6}
+      F. Pedersen, “Beam Loading Effects in the CERN PS Booster”,
+      \textit{IEEE Transactions on Nuclear Science,},
+      vol. 22, no. 3, pp. 1906-1909, Jun. 1975, doi: 10.1109/TNS.1975.4328024.
+
+      \bibitem{ref7}
+      P. Marchand, “Possible upgrading of the SLS RF system for improving the beam lifetime”,
+      \textit{Proceedings of the 1999 Particle Accelerator Conference (Cat. No.99CH36366),},
+      pp. 989-991 vol.2, 1999, doi: 10.1109/PAC.1999.795424.
+
+      \bibitem{ref8}
+      K. Akai, “Stability analysis of rf accelerating mode with feedback loops under heavy beam loading in SuperKEKB“,
+      \textit{Phys. Rev. Accel. Beams,},
+      vol. 25, no. 10, 2022, doi: 10.1103/PhysRevAccelBeams.25.102002.
+
+      \bibitem{ref9}
+      S. Y. Zhang and W. T. Weng, “Error analysis of acceleration control loops of a synchrotron”,
+      \textit{AIP Conference Proceedings,},
+      vol. 255, no. 1, pp. 181-196, May 1992, doi: 10.1063/1.42317.
+
+      \bibitem{ref10}
+      S. Belomestnykh, R. Kaplan, J. Reilly, and V. Veshcherevich, “Instability of the RF Control Loop in the Presence of a High-Q Passive Superconducting Cavity“, in
+      \textit{Proceedings of the 2005 Particle Accelerator Conference,},
+      May 2005, pp. 2553-2555. doi: 10.1109/PAC.2005.1591178.
+
+      \bibitem{ref11}
+      Y.-Y. Xia et al., “Transfer function measurement for the SSRF SRF system”,
+      \textit{NUCL SCI TECH,},
+      vol. 30, no. 6, p. 101, May 2019, doi: 10.1007/s41365-019-0612-4.
+
+      \bibitem{ref12}
+      X.-Y. Pu et al., “Frequency sensitivity of the passive third harmonic superconducting cavity for SSRF”,
+      \textit{NUCL SCI TECH, },
+      vol. 31, no. 3, p. 31, Feb. 2020, doi: 10.1007/s41365-020-0732-x.
+
+      \bibitem{ref13}
+      T. Phimsen et al., “Improving Touschek lifetime and synchrotron frequency spread by passive harmonic cavity in the storage ring of SSRF”,
+      \textit{NUCL SCI TECH,},
+      vol. 28, no. 8, p. 108, Jun. 2017, doi: 10.1007/s41365-017-0259-y.
+
+      \bibitem{ref14}
+      Z.-K. Liu et al., “Modeling the interaction of a heavily beam loaded SRF cavity with its low-level RF feedback loops”,
+      \textit{Nuclear Instruments and Methods in Physics Research Section A: Accelerators, Spectrometers, Detectors and Associated Equipment,},
+      vol. 894, pp. 57-71, Jun. 2018, doi: 10.1016/j.nima.2018.03.046.
+
+      \bibitem{ref15}
+      A. Chao, “Physics Of Collective Beam Instabilities In High Energy Accelerators”, Jan. 1993
+
+   \end{thebibliography}
+} % end \ifboolexpr
+%
+% for use as JACoW template the inclusion of the ANNEX parts have been commented out
+% to generate the complete documentation please remove the "%" of the next two commands
+% 
+%===\newpage
+
+%===\include{annexes-Letter}
+
+\end{document}
